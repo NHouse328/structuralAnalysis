@@ -1,7 +1,9 @@
 package br.com.gavriel.elementos;
 
+import br.com.gavriel.elementos.model.Coordinate;
 import br.com.gavriel.elementos.model.Elemento;
 import br.com.gavriel.elementos.model.Point2D;
+import br.com.gavriel.elementos.src.Plotter;
 import br.com.gavriel.elementos.src.Utils;
 import lombok.extern.log4j.Log4j2;
 
@@ -17,16 +19,25 @@ public class ElementosApplication {
 	static Utils utils = new Utils();
 	public static void main(String[] args) {
 
+		List<Coordinate> coordinates = Arrays.asList(
+				new Coordinate(50, 50),
+				new Coordinate(100, 150),
+				new Coordinate(-50, -100),
+				new Coordinate(-120, 80)
+		);
+
+		Plotter.createAndShowPlot(coordinates);
+
 		double epsilon = 1e-10;
 
 		double radius = utils.convertMillimeterToMeter(utils.inchToMillimeters(1));
 		double modulusOfElasticity = AISI_ACO_1045.getKgfPreMm2();
 
 		Point2D[] point = {
-				new Point2D("A", 0.0, 0.0, null, null),
-				new Point2D("B", 5000.0, 0.0, +0.0, null),
-				new Point2D("C", 3500.0, 2000.0, +1500.0, +1200.0),
-				new Point2D("D", 1500.0, 2000.0, +0.0, -8000.0),
+			new Point2D("A", 0.0	,0.0		, null	, null),
+			new Point2D("B", 5000.0,0.0		, +0.0	, null),
+			new Point2D("C", 3500.0,2000.0	, +1500.0, +1200.0),
+			new Point2D("D", 1500.0,2000.0	, +0.0	, -8000.0),
 		};
 
 		int degreesOfFreedom = point.length * 2;
@@ -50,21 +61,25 @@ public class ElementosApplication {
 				new Elemento("f", modulusOfElasticity, radius, point[3], point[1]),
 		};
 
-		log.info("ELEMENTO;α;λ;μ;λ²;μ²;λ.μ;A[m²];L[m];E[kgf/mm²];EA/L");
+//		log.info("ELEMENTO;α;λ;μ;λ²;μ²;λ.μ;A[m²];L[m];E[kgf/mm²];EA/L");
+//		for (Elemento elemento : elements) {
+//			log.info(
+//					elemento.getName() + ";" +
+//							elemento.getAngleDegree() + ";" +
+//							elemento.getAngleCos() + ";" +
+//							elemento.getAngleSin() + ";" +
+//							elemento.getAngleCosSquered() + ";" +
+//							elemento.getAngleSinSquered() + ";" +
+//							elemento.getSinTimesCos() + ";" +
+//							elemento.getCrossSection() + ";" +
+//							elemento.getLength() + ";" +
+//							elemento.getModulusOfElasticity() + ";" +
+//							elemento.getAxialStiffness()
+//			);
+//		}
+
 		for (Elemento elemento : elements) {
-			log.info(
-					elemento.getName() + ";" +
-							elemento.getAngleDegree() + ";" +
-							elemento.getAngleCos() + ";" +
-							elemento.getAngleSin() + ";" +
-							elemento.getAngleCosSquered() + ";" +
-							elemento.getAngleSinSquered() + ";" +
-							elemento.getSinTimesCos() + ";" +
-							elemento.getCrossSection() + ";" +
-							elemento.getLength() + ";" +
-							elemento.getModulusOfElasticity() + ";" +
-							elemento.getAxialStiffness()
-			);
+			log.info("Elemento:;"+elemento.getName());
 		}
 
 		double[][] globalStiffnessMatrix = new double[degreesOfFreedom][degreesOfFreedom];

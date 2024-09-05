@@ -1,6 +1,7 @@
 package br.com.gavriel.elementos;
 
 import br.com.gavriel.elementos.model.Elemento;
+import br.com.gavriel.elementos.model.Point2D;
 import br.com.gavriel.elementos.src.Utils;
 import lombok.extern.log4j.Log4j2;
 
@@ -8,36 +9,65 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static br.com.gavriel.elementos.model.ModulusOfElasticity.AISI_ACO_1045;
+
 @Log4j2
 public class ElementosApplication {
 
 	static Utils utils = new Utils();
 	public static void main(String[] args) {
 
-		double epsilon = 1e-11;
+		double epsilon = 1e-10;
 
-		double[] elementsAngle = {0.0, 126.87, 180.0, 233.13, 29.74, 150.26};
-		double[] elementsLength = {5000.0, 2500.0, 2000.0, 2500.0, 4031.13, 4031.13};
+		double radius = utils.convertMillimeterToMeter(utils.inchToMillimeters(1));
+		double modulusOfElasticity = AISI_ACO_1045.getKgfPreMm2();
+
+		Point2D[] point = {
+				new Point2D("A", 0.0, 0.0, null, null),
+				new Point2D("B", 5000.0, 0.0, +0.0, null),
+				new Point2D("C", 3500.0, 2000.0, +1500.0, +1200.0),
+				new Point2D("D", 1500.0, 2000.0, +0.0, -8000.0),
+		};
+
+		int degreesOfFreedom = point.length * 2;
 		Object[] knotsForces = {null, null, 0.0, null, 1500.0, 1200.0, 0.0, -8000.0};
-		int degreesOfFreedom = 8;
 
-		int[][] elementsKnots =
-			{
+		int[][] elementsKnots = {
 				{1, 2, 3, 4},
 				{3, 4, 5, 6},
 				{5, 6, 7, 8},
 				{1, 2, 7, 8},
 				{1, 2, 5, 6},
 				{3, 4, 7, 8}
-			};
+		};
+
+		Elemento[] elements = {
+				new Elemento("a", modulusOfElasticity, radius, point[0], point[1]),
+				new Elemento("b", modulusOfElasticity, radius, point[1], point[2]),
+				new Elemento("c", modulusOfElasticity, radius, point[2], point[3]),
+				new Elemento("d", modulusOfElasticity, radius, point[3], point[0]),
+				new Elemento("e", modulusOfElasticity, radius, point[0], point[2]),
+				new Elemento("f", modulusOfElasticity, radius, point[3], point[1]),
+		};
+
+		log.info("ELEMENTO;α;λ;μ;λ²;μ²;λ.μ;A[m²];L[m];E[kgf/mm²];EA/L");
+		for (Elemento elemento : elements) {
+			log.info(
+					elemento.getName() + ";" +
+							elemento.getAngleDegree() + ";" +
+							elemento.getAngleCos() + ";" +
+							elemento.getAngleSin() + ";" +
+							elemento.getAngleCosSquered() + ";" +
+							elemento.getAngleSinSquered() + ";" +
+							elemento.getSinTimesCos() + ";" +
+							elemento.getCrossSection() + ";" +
+							elemento.getLength() + ";" +
+							elemento.getModulusOfElasticity() + ";" +
+							elemento.getAxialStiffness()
+			);
+		}
 
 		double[][] globalStiffnessMatrix = new double[degreesOfFreedom][degreesOfFreedom];
-
-		Elemento[] elements = new Elemento[elementsAngle.length];
-
-		for (int i = 0; i < elementsAngle.length; i++) {
-			elements[i] = new Elemento(i, utils.degreesToRadians(elementsAngle[i]), utils.convertMillimeterToMeter(utils.inchToMillimeters(1)), utils.convertMillimeterToMeter(elementsLength[i]), utils.gpaToKgfPreMm2(206));
-		}
 
 		for (int i = 0; i < degreesOfFreedom; i++) {
 			for (int j = 0; j < degreesOfFreedom; j++) {

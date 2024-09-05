@@ -14,7 +14,7 @@ public class Utils {
         return 25.4 * Inches;
     }
 
-    public double gpaToKgfPreMm2(double gpa) {
+    public static double gpaToKgfPreMm2(double gpa) {
         double conversionFactor = 101.971621;
 
         return gpa * conversionFactor;

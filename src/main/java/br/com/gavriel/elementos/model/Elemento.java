@@ -31,14 +31,16 @@ public class Elemento {
     private double deltaX;
     private double deltaY;
 
+    public String angleName;
     public double angleRadian;
     public double angleDegree;
 
     private final double epsilon = 1e-15;
     private static final Utils utils = new Utils();
 
-    public Elemento(String name, double modulusOfElasticity, double radius, Point2D start, Point2D end) {
+    public Elemento(String name, String angleName, double modulusOfElasticity, double radius, Point2D start, Point2D end) {
         this.name = name;
+        this.angleName = angleName;
 
         this.start = start;
         this.end = end;

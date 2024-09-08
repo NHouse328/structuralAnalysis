@@ -1,5 +1,8 @@
 package br.com.gavriel.elementos.src;
 
+import java.awt.Color;
+import java.util.Random;
+
 public class Utils {
 
     public double radiansToDegrees (double radian) {
@@ -113,5 +116,16 @@ public class Utils {
 
     public double convertMillimeterToMeter(double millimeter) {
         return millimeter / 1000;
+    }
+
+    public static Color getRandomColor() {
+        Random rand = new Random();
+
+        // Vermelho e Verde são menores para manter o azul dominante
+        int red = rand.nextInt(255); // Pequena quantidade de vermelho (0-50)
+        int green = rand.nextInt(255); // Pequena quantidade de verde (0-50)
+        int blue = rand.nextInt(255); // Azul mais forte (100-255)
+
+        return new Color(red, green, blue);
     }
 }

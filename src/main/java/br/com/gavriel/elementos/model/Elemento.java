@@ -9,31 +9,31 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Elemento {
 
-    public String name;
-    public double length;
+    private String name;
+    private double length;
 
-    public double angleSin;
-    public double angleCos;
+    private double angleSin;
+    private double angleCos;
 
-    public double sinTimesCos;
-    public double angleSinSquered;
-    public double angleCosSquered;
+    private double sinTimesCos;
+    private double angleSinSquered;
+    private double angleCosSquered;
 
-    public double modulusOfElasticity;
-    public double radius;
-    public double crossSection;
-    public double axialStiffness;
-    public double[][] elementStiffnessMatrix;
+    private double modulusOfElasticity;
+    private double radius;
+    private double crossSection;
+    private double axialStiffness;
+    private double[][] elementStiffnessMatrix;
 
-    public Point2D start;
-    public Point2D end;
+    private Point2D start;
+    private Point2D end;
 
     private double deltaX;
     private double deltaY;
 
-    public String angleName;
-    public double angleRadian;
-    public double angleDegree;
+    private String angleName;
+    private double angleRadian;
+    private double angleDegree;
 
     private final double epsilon = 1e-15;
     private static final Utils utils = new Utils();

@@ -75,8 +75,8 @@ public class StructuralAnalysis {
 				point.setName(getUpperLetter(i));
 			}
 
-			knotsForces.add(point.forceX);
-			knotsForces.add(point.forceY);
+			knotsForces.add(point.getForceX());
+			knotsForces.add(point.getForceY());
 
 		}
 
@@ -174,6 +174,6 @@ public class StructuralAnalysis {
 
 		log.info("Elements internal forces : " + Arrays.toString(elementsInternalForces));
 
-		Plotter.createAndShowPlot(this.points, this.elements, matrixSupportsReactions);
+		Plotter.createAndShowPlot(this.points, this.elements, matrixSupportsReactions, true);
 	}
 }

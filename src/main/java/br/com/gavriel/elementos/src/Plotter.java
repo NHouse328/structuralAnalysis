@@ -1,5 +1,6 @@
 package br.com.gavriel.elementos.src;
 
+import br.com.gavriel.elementos.model.Colors;
 import br.com.gavriel.elementos.model.Elemento;
 import br.com.gavriel.elementos.model.Point2D;
 import lombok.extern.log4j.Log4j2;
@@ -8,6 +9,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -25,6 +27,7 @@ public class Plotter extends JPanel implements MouseWheelListener {
     private List<Point2D> points;
     private List<Elemento> elements;
     private final double[] matrixSupportsReactions;
+    private boolean showData = true;
 
     private double scale = 1.0; // Fator de escala inicial
     private double offsetX = 250; // Posição inicial do centro no eixo X
@@ -37,10 +40,11 @@ public class Plotter extends JPanel implements MouseWheelListener {
     static final Stroke dashed = new BasicStroke(1, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL,
             0, new float[]{5}, 0);
 
-    public Plotter(List<Point2D> points, List<Elemento> elements, double[] matrixSupportsReactions) {
+    public Plotter(List<Point2D> points, List<Elemento> elements, double[] matrixSupportsReactions, boolean showData) {
         this.points = points;
         this.elements = elements;
         this.matrixSupportsReactions = matrixSupportsReactions;
+        this.showData = showData;
 
         addMouseWheelListener(this); // Listener para zoom
         MouseAdapter mouseHandler = new MouseAdapter() {
@@ -100,8 +104,12 @@ public class Plotter extends JPanel implements MouseWheelListener {
                 BasicStroke.CAP_ROUND,
                 BasicStroke.JOIN_ROUND,
                 10.0f, null, 0.0f);
-
         g2d.setStroke(stroke);
+
+        Font font = new Font("Serif", Font.PLAIN, (int) (160 * scale));
+        g2d.setFont(font);
+
+        Colors colors = new Colors();
 
         for (int i = 0; i < elements.size(); i++) {
             Elemento element = elements.get(i);
@@ -124,14 +132,27 @@ public class Plotter extends JPanel implements MouseWheelListener {
 
             g2d.drawLine(startX, startY, endX, endY);
 
-            g2d.setColor(Color.BLUE);
+            g2d.setColor(colors.getColor(i));
 
             g2d.drawArc(startX - size / 2, startY - size / 2, size, size, 0, (int) element.getAngleDegree());
 
-            double midX = startX + (size / 2) * Math.cos(element.getAngleRadian() / 2) + 10; // ponto médio em X no arco
-            double midY = startY - (size / 2) * Math.sin(element.getAngleRadian() / 2) - 10; // ponto médio em Y no arco
+            double RelativeMidX = (size / 2) * Math.cos(element.getAngleRadian() / 2);
+            double RelativeMidY = (size / 2) * Math.sin(element.getAngleRadian() / 2);
 
-            g2d.drawString(element.getAngleName() + " ≅ " + df.format(element.getAngleDegree()) + "º", (int) midX, (int) midY);
+            double midX;
+            double midY;
+            if (element.getAngleDegree() <= 180) {
+                midX = startX + RelativeMidX + 10* scale; // ponto médio em X no arco
+                midY = startY - RelativeMidY + 10* scale; // ponto médio em Y no arco
+            } else {
+                midX = startX - RelativeMidX - 50* scale; // ponto médio em X no arco
+                midY = startY + RelativeMidY + 20* scale; // ponto médio em Y no arco
+            }
+            if (this.showData) {
+                g2d.drawString(element.getAngleName() + " ≅ " + df.format(element.getAngleDegree()) + "º", (int) midX, (int) midY);
+            } else {
+                g2d.drawString(element.getAngleName(), (int) midX, (int) midY);
+            }
         }
     }
 
@@ -141,6 +162,12 @@ public class Plotter extends JPanel implements MouseWheelListener {
 
         int j = 0;
 
+        Font font = new Font("Serif", Font.PLAIN, (int) (160 * scale));
+        g2d.setFont(font);
+
+        int diameter = (int) (30 * scale);
+        int fontSize = g2d.getFontMetrics().getHeight();
+
         for (int i = 0; i < points.size(); i ++) {
             g2d.setColor(Color.RED);
             Point2D point = points.get(i);
@@ -148,50 +175,46 @@ public class Plotter extends JPanel implements MouseWheelListener {
             double x = offsetX + point.getX() * scale;
             double y = offsetY - point.getY() * scale;
 
-            g2d.fillOval((int) x - 5, (int) y - 5, 10, 10);
-            g2d.drawString(point.getName() + " (" + point.getX() + ", " + point.getY() + ")", (int) (x + 10), (int) y + 50);
+            double forceY;
+            double forceX;
 
-            if (point.getForceX() != null) {
-                g2d.setColor(Color.BLUE);
-                double forceX = point.getForceX();
-                drawArrow(g2d, (int) x, (int) y, (int) (x + forceX * 0.1 * scale), (int) y);
-                g2d.drawString("Fx: " + forceX, (int) (x + forceX * 0.1 * scale + 10), (int) y);
+            g2d.fillOval((int) x - diameter/2, (int) y - diameter/2, diameter, diameter);
+
+            if (this.showData) {
+                g2d.drawString(point.getName() + " (" + point.getX() + ", " + point.getY() + ")", (int) (x + 10  * scale), (int) (y + fontSize+ 100 * scale));
+
+                if (point.getForceX() != null) {
+                    g2d.setColor(Color.BLUE);
+                    forceX = point.getForceX();
+                } else {
+                    g2d.setColor(Color.RED);
+                    forceX = matrixSupportsReactions[j];
+                }
+
+                if (forceX != 0) {
+                    drawArrow(g2d, (int) x, (int) y, (int) (x + forceX * 0.1 * scale), (int) y);
+                }
+
+                g2d.drawString("Fx ≅ " + df.format(forceX), (int) (x + 300 * scale), (int) (y + fontSize/2 + 50 * scale));
+
+                if (point.getForceY() != null) {
+                    g2d.setColor(Color.BLUE);
+                    forceY = point.getForceY();
+                } else {
+                    g2d.setColor(Color.RED);
+                    forceY = matrixSupportsReactions[j + 1];
+                }
+
+                if (forceY != 0) {
+                    drawArrow(g2d, (int) x, (int) y, (int) x, (int) (y - forceY * 0.1 * scale));
+                }
+
+                g2d.drawString("Fy ≅ " + df.format(forceY), (int) x, (int) (y - 400 * scale));
+
+
             } else {
-                g2d.setColor(Color.RED);
-                double forceX = matrixSupportsReactions[j];
-                drawArrow(g2d, (int) x, (int) y, (int) (x + forceX * 0.1 * scale), (int) y);
-                g2d.drawString("Fx: " + df.format(forceX), (int) (x + forceX * 0.1 * scale + 10), (int) y);
+                g2d.drawString(point.getName(), (int) (x + 10  * scale), (int) (y + fontSize + 100 * scale));
             }
-
-            if (point.getForceY() != null) {
-                g2d.setColor(Color.BLUE);
-                double forceY = point.getForceY();
-                drawArrow(g2d, (int) x, (int) y, (int) x, (int) (y - forceY * 0.1 * scale));
-                g2d.drawString("Fy: " + df.format(forceY), (int) x, (int) (y - forceY * 0.1 * scale - 10));
-            } else {
-                g2d.setColor(Color.RED);
-                double forceY = matrixSupportsReactions[j+1];
-                drawArrow(g2d, (int) x, (int) y, (int) x, (int) (y - forceY * 0.1 * scale));
-                g2d.drawString("Fy: " + df.format(forceY) , (int) x, (int) (y - forceY * 0.1 * scale - 10));
-            }
-
-//  Printa Força resultante
-//            if (
-//                        point.getForceX() != null && point.getForceX() != 0.0
-//                    &&  point.getForceY() != null && point.getForceY() != 0.0
-//            ) {
-//                g2d.setColor(Color.BLUE);
-//                g2d.setStroke(dashed);
-//
-//                double forceY = point.getForceY();
-//                double forceX = point.getForceX();
-//
-//                double force = Math.sqrt(Math.pow(forceX, 2) + Math.pow(forceY, 2));
-//
-//                drawArrow(g2d, (int) x, (int) y,  (int) (x + forceX * 0.1 * scale), (int) (y - forceY * 0.1 * scale));
-//                g2d.drawString("F"+ point.getName() + ": " + df.format(force), (int) (x + forceX * 0.1 * scale), (int) (y - forceY * 0.1 * scale - 10));
-//            }
-
             j+=2;
         }
     }
@@ -202,7 +225,7 @@ public class Plotter extends JPanel implements MouseWheelListener {
 
         // Calcula o ângulo da linha para posicionar as "asas" da seta
         double angle = Math.atan2(y2 - y1, x2 - x1);
-        int arrowSize = 10;
+        int arrowSize = (int) (30 * scale);
 
         // Desenha as duas asas da seta
         int xArrow1 = x2 - (int) (arrowSize * Math.cos(angle - Math.PI / 6));
@@ -238,11 +261,11 @@ public class Plotter extends JPanel implements MouseWheelListener {
         repaint(); // Re-desenha o gráfico após o zoom
     }
 
-    public static void createAndShowPlot(List<Point2D> points, List<Elemento> elements, double[] matrixSupportsReactions) {
+    public static void createAndShowPlot(List<Point2D> points, List<Elemento> elements, double[] matrixSupportsReactions, boolean showData) {
         JFrame frame = new JFrame("Plotter");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(500, 500);
-        frame.add(new Plotter(points, elements, matrixSupportsReactions));
+        frame.add(new Plotter(points, elements, matrixSupportsReactions, showData));
         frame.setVisible(true);
     }
 }

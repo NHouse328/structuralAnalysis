@@ -6,9 +6,9 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class Point2D {
-    public String name;
-    public double x;
-    public double y;
-    public Double forceX;
-    public Double forceY;
+    private String name;
+    private double x;
+    private double y;
+    private Double forceX;
+    private Double forceY;
 }

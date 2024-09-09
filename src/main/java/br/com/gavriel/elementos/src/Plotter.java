@@ -149,7 +149,7 @@ public class Plotter extends JPanel implements MouseWheelListener {
             double y = offsetY - point.getY() * scale;
 
             g2d.fillOval((int) x - 5, (int) y - 5, 10, 10);
-            g2d.drawString(point.getName() + " (" + point.getX() + ", " + point.getY() + ")", (int) (x + 10), (int) y - 10);
+            g2d.drawString(point.getName() + " (" + point.getX() + ", " + point.getY() + ")", (int) (x + 10), (int) y + 50);
 
             if (point.getForceX() != null) {
                 g2d.setColor(Color.BLUE);

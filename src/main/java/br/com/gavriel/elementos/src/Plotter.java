@@ -24,6 +24,7 @@ import java.util.List;
 public class Plotter extends JPanel implements MouseWheelListener {
     private List<Point2D> points;
     private List<Elemento> elements;
+    private final double[] matrixSupportsReactions;
 
     private double scale = 1.0; // Fator de escala inicial
     private double offsetX = 250; // Posição inicial do centro no eixo X
@@ -33,9 +34,13 @@ public class Plotter extends JPanel implements MouseWheelListener {
 
     static final DecimalFormat df = new DecimalFormat("0.00");
 
-    public Plotter(List<Point2D> points, List<Elemento> elements) {
+    static final Stroke dashed = new BasicStroke(1, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL,
+            0, new float[]{5}, 0);
+
+    public Plotter(List<Point2D> points, List<Elemento> elements, double[] matrixSupportsReactions) {
         this.points = points;
         this.elements = elements;
+        this.matrixSupportsReactions = matrixSupportsReactions;
 
         addMouseWheelListener(this); // Listener para zoom
         MouseAdapter mouseHandler = new MouseAdapter() {
@@ -84,9 +89,6 @@ public class Plotter extends JPanel implements MouseWheelListener {
     }
 
     private void drawCartesianPlan(Graphics2D g2d) {
-        Stroke dashed = new BasicStroke(1, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL,
-                0, new float[]{5}, 0);
-
         g2d.setStroke(dashed);
 
         g2d.drawLine((int) offsetX - 200, (int) offsetY, (int) offsetX + 200, (int) offsetY); // Eixo X
@@ -111,6 +113,13 @@ public class Plotter extends JPanel implements MouseWheelListener {
             int endX = (int) (offsetX + element.getEnd().getX() * scale);
             int endY = (int) (offsetY - element.getEnd().getY() * scale);
 
+            int midXLine = (startX + endX) / 2;
+            int midYLine = (startY + endY) / 2;
+
+            int textOffsetY = 10;
+
+            g2d.drawString(element.getName(), midXLine, midYLine - textOffsetY);
+
             int size = (int) ((500 + 10 * i) * scale);
 
             g2d.drawLine(startX, startY, endX, endY);
@@ -128,16 +137,81 @@ public class Plotter extends JPanel implements MouseWheelListener {
 
 
     private void drawPoints(Graphics2D g2d) {
-        g2d.setColor(Color.RED);
-        
-        for (Point2D point : points) {
-            
+        g2d.setColor(Color.BLUE);
+
+        int j = 0;
+
+        for (int i = 0; i < points.size(); i ++) {
+            g2d.setColor(Color.RED);
+            Point2D point = points.get(i);
+
             double x = offsetX + point.getX() * scale;
             double y = offsetY - point.getY() * scale;
-            
+
             g2d.fillOval((int) x - 5, (int) y - 5, 10, 10);
-            g2d.drawString("(" + point.getX() + ", " + point.getY() + ")", (int) (x + 5), (int) y - 5);
+            g2d.drawString(point.getName() + " (" + point.getX() + ", " + point.getY() + ")", (int) (x + 10), (int) y - 10);
+
+            if (point.getForceX() != null) {
+                g2d.setColor(Color.BLUE);
+                double forceX = point.getForceX();
+                drawArrow(g2d, (int) x, (int) y, (int) (x + forceX * 0.1 * scale), (int) y);
+                g2d.drawString("Fx: " + forceX, (int) (x + forceX * 0.1 * scale + 10), (int) y);
+            } else {
+                g2d.setColor(Color.RED);
+                double forceX = matrixSupportsReactions[j];
+                drawArrow(g2d, (int) x, (int) y, (int) (x + forceX * 0.1 * scale), (int) y);
+                g2d.drawString("Fx: " + df.format(forceX), (int) (x + forceX * 0.1 * scale + 10), (int) y);
+            }
+
+            if (point.getForceY() != null) {
+                g2d.setColor(Color.BLUE);
+                double forceY = point.getForceY();
+                drawArrow(g2d, (int) x, (int) y, (int) x, (int) (y - forceY * 0.1 * scale));
+                g2d.drawString("Fy: " + df.format(forceY), (int) x, (int) (y - forceY * 0.1 * scale - 10));
+            } else {
+                g2d.setColor(Color.RED);
+                double forceY = matrixSupportsReactions[j+1];
+                drawArrow(g2d, (int) x, (int) y, (int) x, (int) (y - forceY * 0.1 * scale));
+                g2d.drawString("Fy: " + df.format(forceY) , (int) x, (int) (y - forceY * 0.1 * scale - 10));
+            }
+
+//  Printa Força resultante
+//            if (
+//                        point.getForceX() != null && point.getForceX() != 0.0
+//                    &&  point.getForceY() != null && point.getForceY() != 0.0
+//            ) {
+//                g2d.setColor(Color.BLUE);
+//                g2d.setStroke(dashed);
+//
+//                double forceY = point.getForceY();
+//                double forceX = point.getForceX();
+//
+//                double force = Math.sqrt(Math.pow(forceX, 2) + Math.pow(forceY, 2));
+//
+//                drawArrow(g2d, (int) x, (int) y,  (int) (x + forceX * 0.1 * scale), (int) (y - forceY * 0.1 * scale));
+//                g2d.drawString("F"+ point.getName() + ": " + df.format(force), (int) (x + forceX * 0.1 * scale), (int) (y - forceY * 0.1 * scale - 10));
+//            }
+
+            j+=2;
         }
+    }
+
+    private void drawArrow(Graphics2D g2d, int x1, int y1, int x2, int y2) {
+        // Desenha a linha da seta
+        g2d.drawLine(x1, y1, x2, y2);
+
+        // Calcula o ângulo da linha para posicionar as "asas" da seta
+        double angle = Math.atan2(y2 - y1, x2 - x1);
+        int arrowSize = 10;
+
+        // Desenha as duas asas da seta
+        int xArrow1 = x2 - (int) (arrowSize * Math.cos(angle - Math.PI / 6));
+        int yArrow1 = y2 - (int) (arrowSize * Math.sin(angle - Math.PI / 6));
+        int xArrow2 = x2 - (int) (arrowSize * Math.cos(angle + Math.PI / 6));
+        int yArrow2 = y2 - (int) (arrowSize * Math.sin(angle + Math.PI / 6));
+
+        g2d.drawLine(x2, y2, xArrow1, yArrow1);
+        g2d.drawLine(x2, y2, xArrow2, yArrow2);
     }
 
     @Override
@@ -164,11 +238,11 @@ public class Plotter extends JPanel implements MouseWheelListener {
         repaint(); // Re-desenha o gráfico após o zoom
     }
 
-    public static void createAndShowPlot(List<Point2D> points, List<Elemento> elements) {
+    public static void createAndShowPlot(List<Point2D> points, List<Elemento> elements, double[] matrixSupportsReactions) {
         JFrame frame = new JFrame("Plotter");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(500, 500);
-        frame.add(new Plotter(points, elements));
+        frame.add(new Plotter(points, elements, matrixSupportsReactions));
         frame.setVisible(true);
     }
 }

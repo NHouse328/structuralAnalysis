@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static br.com.gavriel.elementos.model.Alphabet.getLetter;
+import static br.com.gavriel.elementos.model.Alphabet.getUpperLetter;
 import static br.com.gavriel.elementos.model.GreekAlphabet.getGreekLetter;
 import static br.com.gavriel.elementos.model.ModulusOfElasticity.AISI_ACO_1045;
 
@@ -26,35 +28,39 @@ public class ElementosApplication {
 		double modulusOfElasticity = AISI_ACO_1045.getKgfPreMm2();
 
 		List<Point2D> points = Arrays.asList(
-			new Point2D("A", 0.0	,0.0		, null	, null),
-			new Point2D("B", 5000.0,0.0		, +0.0	, null),
-			new Point2D("C", 3500.0,2000.0	, +1500.0, +1200.0),
-			new Point2D("D", 1500.0,2000.0	, +0.0	, -8000.0)
+			new Point2D(null, 0.0	 ,0.0	, null	, null),
+			new Point2D(null, 5000.0,0.0	, +0.0	, null),
+			new Point2D(null, 3500.0,2000.0	, +1500.0, +1200.0),
+			new Point2D(null, 1500.0,2000.0	, +0.0	, -8000.0)
 		);
-
-
-		int degreesOfFreedom = points.size() * 2;
-		Object[] knotsForces = {null, null, 0.0, null, 1500.0, 1200.0, 0.0, -8000.0};
-
-		int[][] elementsKnots = {
-				{1, 2, 3, 4},
-				{3, 4, 5, 6},
-				{5, 6, 7, 8},
-				{1, 2, 7, 8},
-				{1, 2, 5, 6},
-				{3, 4, 7, 8}
-		};
 
 		List<Elemento> elements = Arrays.asList(
-				new Elemento("a", getGreekLetter(1), modulusOfElasticity, radius, points.get(0), points.get(1)),
-				new Elemento("b", getGreekLetter(2), modulusOfElasticity, radius, points.get(1), points.get(2)),
-				new Elemento("c", getGreekLetter(3), modulusOfElasticity, radius, points.get(2), points.get(3)),
-				new Elemento("d", getGreekLetter(4), modulusOfElasticity, radius, points.get(3), points.get(0)),
-				new Elemento("e", getGreekLetter(5), modulusOfElasticity, radius, points.get(0), points.get(2)),
-				new Elemento("f", getGreekLetter(6), modulusOfElasticity, radius, points.get(3), points.get(1))
+				new Elemento(null, null, modulusOfElasticity, radius, points.get(0), points.get(1)),
+				new Elemento(null, null, modulusOfElasticity, radius, points.get(1), points.get(2)),
+				new Elemento(null, null, modulusOfElasticity, radius, points.get(2), points.get(3)),
+				new Elemento(null, null, modulusOfElasticity, radius, points.get(3), points.get(0)),
+				new Elemento(null, null, modulusOfElasticity, radius, points.get(0), points.get(2)),
+				new Elemento(null, null, modulusOfElasticity, radius, points.get(3), points.get(1))
 		);
 
-		Plotter.createAndShowPlot(points, elements);
+		List<List<Integer>> elementsKnots = new ArrayList<>();
+
+		for (int i = 0; i < elements.size(); i++) {
+			Elemento element = elements.get(i);
+
+			element.setName(getLetter(i));
+			element.setAngleName(getGreekLetter(i));
+
+			List<Integer> knots = new ArrayList<>();
+
+			knots.add(points.indexOf(element.getStart()) * 2 + 1);
+			knots.add(points.indexOf(element.getStart()) * 2 + 2);
+
+			knots.add(points.indexOf(element.getEnd()) * 2 + 1);
+			knots.add(points.indexOf(element.getEnd()) * 2 + 2);
+
+			elementsKnots.add(knots);
+		}
 
 //		log.info("ELEMENTO;α;λ;μ;λ²;μ²;λ.μ;A[m²];L[m];E[kgf/mm²];EA/L");
 //		for (Elemento elemento : elements) {
@@ -73,20 +79,29 @@ public class ElementosApplication {
 //			);
 //		}
 
-		for (Elemento elemento : elements) {
-			log.info("Elemento:;"+elemento.getName());
+		List<Object> knotsForces = new ArrayList<>();
+
+		for (int i = 0; i < points.size(); i++) {
+			Point2D point = points.get(i);
+
+			point.setName(getUpperLetter(i));
+
+			knotsForces.add(point.forceX);
+			knotsForces.add(point.forceY);
+
 		}
 
+		int degreesOfFreedom = points.size() * 2;
 		double[][] globalStiffnessMatrix = new double[degreesOfFreedom][degreesOfFreedom];
 
 		for (int i = 0; i < degreesOfFreedom; i++) {
 			for (int j = 0; j < degreesOfFreedom; j++) {
 
-				for (int knot = 0; knot < elementsKnots.length; knot++) {
+				for (int knot = 0; knot < elementsKnots.size(); knot++) {
 
-					for (int knotX = 0; knotX < elementsKnots[knot].length; knotX++) {
-						for (int knotY = 0; knotY < elementsKnots[knot].length; knotY++) {
-							if (elementsKnots[knot][knotX] == i+1 && elementsKnots[knot][knotY] == j+1) {
+					for (int knotX = 0; knotX < elementsKnots.get(knot).size(); knotX++) {
+						for (int knotY = 0; knotY < elementsKnots.get(knot).size(); knotY++) {
+							if (elementsKnots.get(knot).get(knotX) == i+1 && elementsKnots.get(knot).get(knotY) == j+1) {
 								globalStiffnessMatrix[i][j] += elements.get(knot).getElementStiffnessMatrix()[knotX][knotY];
 							}
 						}
@@ -97,8 +112,8 @@ public class ElementosApplication {
 
 		List<Integer> forcesNotNullIndex = new ArrayList<>();
 
-		for (int i = 0; i < knotsForces.length; i++) {
-			if (knotsForces[i] != null) {
+		for (int i = 0; i < knotsForces.size(); i++) {
+			if (knotsForces.get(i) != null) {
 				forcesNotNullIndex.add(i);
 			}
 		}
@@ -108,7 +123,7 @@ public class ElementosApplication {
 		double[] forcesNotNull = new double[forcesNotNullSize];
 
 		for (int i = 0; i < forcesNotNull.length; i++) {
-			forcesNotNull[i] = (Double)knotsForces[forcesNotNullIndex.get(i)];
+			forcesNotNull[i] = (Double) knotsForces.get(forcesNotNullIndex.get(i));
 		}
 
 		double[][] matrixElementsToInvert = new double[forcesNotNullSize][forcesNotNullSize];
@@ -129,7 +144,7 @@ public class ElementosApplication {
 			}
 		}
 
-		double[] matrixU = new double[knotsForces.length];
+		double[] matrixU = new double[knotsForces.size()];
 
 		for (int i = 0; i < forcesNotNull.length; i++) {
 			matrixU[forcesNotNullIndex.get(i)] = matrixUNotNull[i];
@@ -137,10 +152,10 @@ public class ElementosApplication {
 
 		log.info("Matrix U : " + Arrays.toString(matrixU));
 
-		double[] matrixSupportsReactions = new double[knotsForces.length];
+		double[] matrixSupportsReactions = new double[knotsForces.size()];
 
-		for (int i = 0; i < knotsForces.length; i++) {
-			for (int j = 0; j < knotsForces.length; j++) {
+		for (int i = 0; i < knotsForces.size(); i++) {
+			for (int j = 0; j < knotsForces.size(); j++) {
 				matrixSupportsReactions[i] = utils.multiplyArrays(globalStiffnessMatrix[i], matrixU);
 				if (Math.abs(matrixSupportsReactions[i]) < epsilon) {
 					matrixSupportsReactions[i] = 0;
@@ -162,12 +177,14 @@ public class ElementosApplication {
 
 		for (int i = 0; i < elementsInternalForces.length; i++) {
 			double[] matrixDelta = new double[2];
-			matrixDelta[0] = matrixU[elementsKnots[i][2]-1] - matrixU[elementsKnots[i][0]-1];
-			matrixDelta[1] = matrixU[elementsKnots[i][3]-1] - matrixU[elementsKnots[i][1]-1];
+			matrixDelta[0] = matrixU[elementsKnots.get(i).get(2)-1] - matrixU[elementsKnots.get(i).get(0)-1];
+			matrixDelta[1] = matrixU[elementsKnots.get(i).get(3)-1] - matrixU[elementsKnots.get(i).get(1)-1];
 
 			elementsInternalForces[i] =  elements.get(i).getAxialStiffness() * utils.multiplyArrays(elements.get(i).getTrigonometry(), matrixDelta);
 		}
 
 		log.info("Elements internal forces : " + Arrays.toString(elementsInternalForces));
+
+		Plotter.createAndShowPlot(points, elements, matrixSupportsReactions);
 	}
 }

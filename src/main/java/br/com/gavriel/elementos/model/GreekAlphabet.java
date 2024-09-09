@@ -8,10 +8,10 @@ public class GreekAlphabet {
 
     // Método que retorna a letra grega com base no índice (começando de 1)
     public static String getGreekLetter(int index) {
-        if (index < 1 || index > GREEK_LETTERS.length) {
+        if (index < 0 || index > GREEK_LETTERS.length) {
             throw new IllegalArgumentException("Índice fora do intervalo: deve ser entre 1 e " + GREEK_LETTERS.length);
         }
-        return GREEK_LETTERS[index - 1];
+        return GREEK_LETTERS[index];
     }
 
     public static void main(String[] args) {

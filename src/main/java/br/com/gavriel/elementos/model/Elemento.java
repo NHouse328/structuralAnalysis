@@ -38,6 +38,13 @@ public class Elemento {
     private final double epsilon = 1e-15;
     private static final Utils utils = new Utils();
 
+    public void setName(String name) {
+        this.name = name;
+    }
+    public void setAngleName(String angleName) {
+        this.angleName = angleName;
+    }
+
     public Elemento(String name, String angleName, double modulusOfElasticity, double radius, Point2D start, Point2D end) {
         this.name = name;
         this.angleName = angleName;

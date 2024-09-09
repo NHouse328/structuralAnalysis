@@ -4,6 +4,7 @@ import br.com.gavriel.elementos.model.Elemento;
 import br.com.gavriel.elementos.model.Point2D;
 import lombok.extern.log4j.Log4j2;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -20,6 +21,8 @@ public class StructuralAnalysis {
 
 	static Utils utils = new Utils();
 	static final double epsilon = 1e-10;
+
+	static final DecimalFormat df = new DecimalFormat("0.##########");
 
 	public StructuralAnalysis(List<Point2D> points, List<Elemento> elements) {
 		this.points = points;
@@ -49,20 +52,21 @@ public class StructuralAnalysis {
 			elementsKnots.add(knots);
 		}
 
-//		log.info("ELEMENTO;α;λ;μ;λ²;μ²;λ.μ;A[m²];L[m];E[kgf/mm²];EA/L");
+//		log.info("|ELEMENTO|α|λ|μ|λ²|μ²|λ.μ|A[m²]|L[m]|E[kgf/mm²]|EA/L|");
+//		log.info("|---|---|---|---|---|---|---|---|---|---|---|");
 //		for (Elemento elemento : this.elements) {
-//			log.info(
-//					elemento.getName() + ";" +
-//							elemento.getAngleDegree() + ";" +
-//							elemento.getAngleCos() + ";" +
-//							elemento.getAngleSin() + ";" +
-//							elemento.getAngleCosSquered() + ";" +
-//							elemento.getAngleSinSquered() + ";" +
-//							elemento.getSinTimesCos() + ";" +
-//							elemento.getCrossSection() + ";" +
-//							elemento.getLength() + ";" +
-//							elemento.getModulusOfElasticity() + ";" +
-//							elemento.getAxialStiffness()
+//			log.info(								  "|" +
+//				elemento.getName() 					+ "|" +
+//				elemento.getAngleDegree() 			+ "|" +
+//				elemento.getAngleCos() 				+ "|" +
+//				elemento.getAngleSin() 				+ "|" +
+//				elemento.getAngleCosSquered() 		+ "|" +
+//				elemento.getAngleSinSquered() 		+ "|" +
+//				elemento.getSinTimesCos() 			+ "|" +
+//				elemento.getCrossSection() 			+ "|" +
+//				elemento.getLength() 				+ "|" +
+//				elemento.getModulusOfElasticity() 	+ "|" +
+//				elemento.getAxialStiffness() 		+ "|"
 //			);
 //		}
 
@@ -174,6 +178,41 @@ public class StructuralAnalysis {
 
 		log.info("Elements internal forces : " + Arrays.toString(elementsInternalForces));
 
-		Plotter.createAndShowPlot(this.points, this.elements, matrixSupportsReactions, true);
+
+			log.info("getElementStiffnessMatrix : " + Arrays.deepToString(elements.get(0).getElementStiffnessMatrix()));
+
+
+
+		for (int i = 0; i < this.elements.size(); i++) {
+			Elemento element = elements.get(i);
+
+			log.info("#### Elemento " + element.getName());
+
+			log.info(						  "|" +
+				elementsKnots.get(i).get(0)	+ "|" +
+				elementsKnots.get(i).get(1)	+ "|" +
+				elementsKnots.get(i).get(2) + "|" +
+				elementsKnots.get(i).get(3)	+ "||"
+			);
+			log.info("|---|---|---|---|---|");
+
+			for (int j = 0; j < element.getElementStiffnessMatrix().length; j++) {
+				StringBuilder text = new StringBuilder("|");
+				double[][] elementStiffnessMatrix = element.getElementStiffnessMatrix();
+
+				for (int k = 0; k < elementStiffnessMatrix.length; k++) {
+					text.append(df.format(elementStiffnessMatrix[j][k]));
+					text.append("|");
+				}
+
+				text.append(elementsKnots.get(i).get(j));
+				text.append("|");
+
+				log.info(text);
+			}
+			log.info("");
+		}
+
+//		Plotter.createAndShowPlot(this.points, this.elements, matrixSupportsReactions, true);
 	}
 }

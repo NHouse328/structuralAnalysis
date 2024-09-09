@@ -45,9 +45,8 @@ public class Elemento {
         this.angleName = angleName;
     }
 
-    public Elemento(String name, String angleName, double modulusOfElasticity, double radius, Point2D start, Point2D end) {
+    public Elemento(String name, double modulusOfElasticity, double radius, Point2D start, Point2D end) {
         this.name = name;
-        this.angleName = angleName;
 
         this.start = start;
         this.end = end;

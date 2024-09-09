@@ -25,33 +25,36 @@ public class ElementosApplication {
 			new Point2D("1"	,0.0	 	,0.0		, null, null),
 			new Point2D("2"	,5000.0	,0.0		, +0.0, +0.0),
 			new Point2D("3"	,10000.0	,1500.0	, +0.0, null),
-			new Point2D("4"	,15000.0	,3000.0	, +0.0, -4000.0),
-			new Point2D("5"	,20000.0	,3000.0	, +0.0, -4000.0),
+			new Point2D("4"	,15000.0	,3000.0	, +0.0, +0.0),
+			new Point2D("5"	,20000.0	,3000.0	, +0.0, +0.0),
 			new Point2D("6"	,20000.0	,6000.0	, +0.0, +0.0),
 			new Point2D("7"	,15000.0	,6000.0	, +0.0, +0.0),
 			new Point2D("8"	,10000.0	,4500.0	, +0.0, +0.0),
-			new Point2D("9"	,5000.0	,3000.0	, +0.0, +0.0),
-			new Point2D("10"	,0.0		,3000.0	, null, +0.0)
+			new Point2D("9"	,5000.0	,3000.0	, +0.0, -8826.0),
+			new Point2D("10"	,0.0		,3000.0	, null, -8826.0),
+			new Point2D("Massa"	,17500.0		,-4000.0	, +0.0, -83300.0)
 		);
 
 		List<Elemento> elements = Arrays.asList(
-				new Elemento("1"	, null, modulusOfElasticity, radius, points.get(1-1)	, points.get(2-1))	,
-				new Elemento("2"	, null, modulusOfElasticity, radius, points.get(2-1)	, points.get(3-1))	,
-				new Elemento("3"	, null, modulusOfElasticity, radius, points.get(3-1)	, points.get(4-1))	,
-				new Elemento("4"	, null, modulusOfElasticity, radius, points.get(4-1)	, points.get(5-1))	,
-				new Elemento("5"	, null, modulusOfElasticity, radius, points.get(5-1)	, points.get(6-1))	,
-				new Elemento("6"	, null, modulusOfElasticity, radius, points.get(6-1)	, points.get(7-1))	,
-				new Elemento("7"	, null, modulusOfElasticity, radius, points.get(7-1)	, points.get(8-1))	,
-				new Elemento("8"	, null, modulusOfElasticity, radius, points.get(8-1)	, points.get(9-1))	,
-				new Elemento("9"	, null, modulusOfElasticity, radius, points.get(9-1)	, points.get(10-1))	,
-				new Elemento("10"	, null, modulusOfElasticity, radius, points.get(10-1)	, points.get(1-1))	,
-				new Elemento("11"	, null, modulusOfElasticity, radius, points.get(1-1)	, points.get(9-1))	,
-				new Elemento("12"	, null, modulusOfElasticity, radius, points.get(9-1)	, points.get(2-1))	,
-				new Elemento("13"	, null, modulusOfElasticity, radius, points.get(9-1)	, points.get(3-1))	,
-				new Elemento("14"	, null, modulusOfElasticity, radius, points.get(8-1)	, points.get(3-1))	,
-				new Elemento("15"	, null, modulusOfElasticity, radius, points.get(7-1)	, points.get(3-1))	,
-				new Elemento("16"	, null, modulusOfElasticity, radius, points.get(7-1)	, points.get(4-1))	,
-				new Elemento("17"	, null, modulusOfElasticity, radius, points.get(7-1)	, points.get(5-1))
+				new Elemento("1"	, modulusOfElasticity, radius, points.get(1-1)	, points.get(2-1))	,
+				new Elemento("2"	, modulusOfElasticity, radius, points.get(2-1)	, points.get(3-1))	,
+				new Elemento("3"	, modulusOfElasticity, radius, points.get(3-1)	, points.get(4-1))	,
+				new Elemento("4"	, modulusOfElasticity, radius, points.get(4-1)	, points.get(5-1))	,
+				new Elemento("5"	, modulusOfElasticity, radius, points.get(5-1)	, points.get(6-1))	,
+				new Elemento("6"	, modulusOfElasticity, radius, points.get(6-1)	, points.get(7-1))	,
+				new Elemento("7"	, modulusOfElasticity, radius, points.get(7-1)	, points.get(8-1))	,
+				new Elemento("8"	, modulusOfElasticity, radius, points.get(8-1)	, points.get(9-1))	,
+				new Elemento("9"	, modulusOfElasticity, radius, points.get(9-1)	, points.get(10-1))	,
+				new Elemento("10"	, modulusOfElasticity, radius, points.get(10-1)	, points.get(1-1))	,
+				new Elemento("11"	, modulusOfElasticity, radius, points.get(1-1)	, points.get(9-1))	,
+				new Elemento("12"	, modulusOfElasticity, radius, points.get(9-1)	, points.get(2-1))	,
+				new Elemento("13"	, modulusOfElasticity, radius, points.get(9-1)	, points.get(3-1))	,
+				new Elemento("14"	, modulusOfElasticity, radius, points.get(8-1)	, points.get(3-1))	,
+				new Elemento("15"	, modulusOfElasticity, radius, points.get(7-1)	, points.get(3-1))	,
+				new Elemento("16"	, modulusOfElasticity, radius, points.get(7-1)	, points.get(4-1))	,
+				new Elemento("17"	, modulusOfElasticity, radius, points.get(7-1)	, points.get(5-1))	,
+				new Elemento("18"	, modulusOfElasticity, radius, points.get(11-1)	, points.get(4-1))	,
+				new Elemento("19"	, modulusOfElasticity, radius, points.get(11-1)	, points.get(5-1))
 		);
 
 		StructuralAnalysis analysis = new StructuralAnalysis(points, elements);

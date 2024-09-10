@@ -2,6 +2,8 @@ package br.com.gavriel.elementos;
 
 import br.com.gavriel.elementos.model.Elemento;
 import br.com.gavriel.elementos.model.Point2D;
+import br.com.gavriel.elementos.src.FileLogger;
+import br.com.gavriel.elementos.src.Plotter;
 import br.com.gavriel.elementos.src.StructuralAnalysis;
 import br.com.gavriel.elementos.src.Utils;
 import lombok.extern.log4j.Log4j2;
@@ -20,6 +22,22 @@ public class ElementosApplication {
 
 		double radius = utils.convertMillimeterToMeter(utils.inchToMillimeters(1));
 		double modulusOfElasticity = AISI_ACO_1045.getKgfPreMm2();
+
+//		List<Point2D> points = Arrays.asList(
+//				new Point2D(null, 0.0	 ,0.0	, null	, null),
+//				new Point2D(null, 5000.0,0.0	, +0.0	, null),
+//				new Point2D(null, 3500.0,2000.0	, +1500.0, +1200.0),
+//				new Point2D(null, 1500.0,2000.0	, +0.0	, -8000.0)
+//		);
+//
+//		List<Elemento> elements = Arrays.asList(
+//				new Elemento(null, modulusOfElasticity, radius, points.get(0), points.get(1)),
+//				new Elemento(null, modulusOfElasticity, radius, points.get(1), points.get(2)),
+//				new Elemento(null, modulusOfElasticity, radius, points.get(2), points.get(3)),
+//				new Elemento(null, modulusOfElasticity, radius, points.get(3), points.get(0)),
+//				new Elemento(null, modulusOfElasticity, radius, points.get(2), points.get(0)),
+//				new Elemento(null, modulusOfElasticity, radius, points.get(3), points.get(1))
+//		);
 
 		List<Point2D> points = Arrays.asList(
 			new Point2D("1"	,0.0	 	,0.0		, null, null),
@@ -58,6 +76,8 @@ public class ElementosApplication {
 		);
 
 		StructuralAnalysis analysis = new StructuralAnalysis(points, elements);
-//		Plotter.createAndShowPlot(points, elements, matrixSupportsReactions);
+
+		new FileLogger("A1_Solved", points, elements, analysis);
+		Plotter.createAndShowPlot(points, elements, analysis, false);
 	}
 }

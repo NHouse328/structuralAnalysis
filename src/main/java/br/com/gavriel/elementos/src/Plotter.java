@@ -40,10 +40,10 @@ public class Plotter extends JPanel implements MouseWheelListener {
     static final Stroke dashed = new BasicStroke(1, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL,
             0, new float[]{5}, 0);
 
-    public Plotter(List<Point2D> points, List<Elemento> elements, double[] matrixSupportsReactions, boolean showData) {
+    public Plotter(List<Point2D> points, List<Elemento> elements, StructuralAnalysis analysis, boolean showData) {
         this.points = points;
         this.elements = elements;
-        this.matrixSupportsReactions = matrixSupportsReactions;
+        this.matrixSupportsReactions = analysis.getMatrixSupportsReactions();
         this.showData = showData;
 
         addMouseWheelListener(this); // Listener para zoom
@@ -261,11 +261,11 @@ public class Plotter extends JPanel implements MouseWheelListener {
         repaint(); // Re-desenha o gráfico após o zoom
     }
 
-    public static void createAndShowPlot(List<Point2D> points, List<Elemento> elements, double[] matrixSupportsReactions, boolean showData) {
+    public static void createAndShowPlot(List<Point2D> points, List<Elemento> elements, StructuralAnalysis analysis, boolean showData) {
         JFrame frame = new JFrame("Plotter");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(500, 500);
-        frame.add(new Plotter(points, elements, matrixSupportsReactions, showData));
+        frame.add(new Plotter(points, elements, analysis, showData));
         frame.setVisible(true);
     }
 }

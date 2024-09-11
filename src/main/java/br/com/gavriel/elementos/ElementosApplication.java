@@ -47,14 +47,13 @@ public class ElementosApplication {
 			new Point2D("1"	,0.0	 	,0.0		, null, null),
 			new Point2D("2"	,5000.0	,0.0		, +0.0, +0.0),
 			new Point2D("3"	,10000.0	,1500.0	, +0.0, null),
-			new Point2D("4"	,15000.0	,3000.0	, +0.0, +0.0),
-			new Point2D("5"	,20000.0	,3000.0	, +0.0, +0.0),
+			new Point2D("4"	,15000.0	,3000.0	, +14868.0, -41650.0),
+			new Point2D("5"	,20000.0	,3000.0	, -14868.0, -41650.0),
 			new Point2D("6"	,20000.0	,6000.0	, +0.0, +0.0),
 			new Point2D("7"	,15000.0	,6000.0	, +0.0, +0.0),
 			new Point2D("8"	,10000.0	,4500.0	, +0.0, +0.0),
 			new Point2D("9"	,5000.0	,3000.0	, +0.0, -8826.0),
-			new Point2D("10"	,0.0		,3000.0	, null, -8826.0),
-			new Point2D("Massa"	,17500.0		,-4000.0	, +0.0, -83300.0)
+			new Point2D("10"	,0.0		,3000.0	, null, -8826.0)
 		);
 
 		List<Elemento> elements = Arrays.asList(
@@ -74,14 +73,12 @@ public class ElementosApplication {
 				new Elemento("14"	, modulusOfElasticity, crossSection, points.get(8-1)	, points.get(3-1))	,
 				new Elemento("15"	, modulusOfElasticity, crossSection, points.get(7-1)	, points.get(3-1))	,
 				new Elemento("16"	, modulusOfElasticity, crossSection, points.get(7-1)	, points.get(4-1))	,
-				new Elemento("17"	, modulusOfElasticity, crossSection, points.get(7-1)	, points.get(5-1))	,
-				new Elemento("18"	, modulusOfElasticity, crossSection, points.get(11-1)	, points.get(4-1))	,
-				new Elemento("19"	, modulusOfElasticity, crossSection, points.get(11-1)	, points.get(5-1))
+				new Elemento("17"	, modulusOfElasticity, crossSection, points.get(7-1)	, points.get(5-1))
 		);
 
 		StructuralAnalysis analysis = new StructuralAnalysis(points, elements);
 
-		new FileLogger("A1_Solved", points, elements, analysis);
-		Plotter.createAndShowPlot(points, elements, analysis, false);
+		new FileLogger("A1_b_Solved", points, elements, analysis);
+		Plotter.createAndShowPlot(points, elements, analysis, true);
 	}
 }

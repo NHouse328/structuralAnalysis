@@ -40,7 +40,7 @@ public class FileLogger {
             
             this.bw = new BufferedWriter(fw);
 
-            this.bw.write("![a1 solved](img/ex1.png)" + "\n\n");
+            this.bw.write("![a1 solved](img/a1.png)" + "\n\n");
 
             writeElementsStiffnessMatrix();
             writeMatrixByElement();
@@ -156,13 +156,12 @@ public class FileLogger {
                 this.bw.write("|" + analysis.getMatrixU()[i]);
             }
 
-            for (int j = 0; j < this.analysis.getMatrixSupportsReactions().length; j++) {
-                this.bw.write("|" + df.format(this.analysis.getMatrixSupportsReactions()[i]));
-            }
+            this.bw.write("|" + df.format(this.analysis.getMatrixSupportsReactions()[i]));
+
 
             this.bw.write("|" + "\n");
         }
-        this.bw.write("| |SOMA:|" + analysis.getSum() + "\n");
+        this.bw.write("| |SOMA:|" + df.format(analysis.getSum()) + "|\n");
     }
 
     private void writeGlobalStiffnessMatrix() throws IOException {
@@ -199,21 +198,21 @@ public class FileLogger {
 
     private void writeElementsStiffnessMatrix() throws IOException {
         this.bw.write("## Matriz de Rigidez de cada elemento:" + "\n");
-        this.bw.write("|ELEMENTO|α|λ|μ|λ²|μ²|λ.μ|A[m²]|L[m]|E[kgf/mm²]|EA/L|" + "\n");
+        this.bw.write("|ELEMENTO|α|λ|μ|λ²|μ²|λ.μ|A[mm²]|L[mm]|E[kgf/mm²]|EA/L|" + "\n");
         this.bw.write("|---|---|---|---|---|---|---|---|---|---|---|" + "\n");
         for (Elemento elemento : this.elements) {
-            this.bw.write(								  "|" +
-                elemento.getName() 					+ "|" +
-                elemento.getAngleDegree() 			+ "|" +
-                elemento.getAngleCos() 				+ "|" +
-                elemento.getAngleSin() 				+ "|" +
-                elemento.getAngleCosSquered() 		+ "|" +
-                elemento.getAngleSinSquered() 		+ "|" +
-                elemento.getSinTimesCos() 			+ "|" +
-                elemento.getCrossSection() 			+ "|" +
-                elemento.getLength() 				+ "|" +
-                elemento.getModulusOfElasticity() 	+ "|" +
-                elemento.getAxialStiffness() 		+ "|" + "\n"
+            this.bw.write(								       "|" +
+                elemento.getName()					            + "|" +
+                df.format(elemento.getAngleDegree()) 			+ "|" +
+                df.format(elemento.getAngleCos()) 				+ "|" +
+                df.format(elemento.getAngleSin()) 				+ "|" +
+                df.format(elemento.getAngleCosSquered()) 		+ "|" +
+                df.format(elemento.getAngleSinSquered()) 		+ "|" +
+                df.format(elemento.getSinTimesCos()) 			+ "|" +
+                df.format(elemento.getCrossSection()) 			+ "|" +
+                df.format(elemento.getLength()) 				+ "|" +
+                df.format(elemento.getModulusOfElasticity()) 	+ "|" +
+                df.format(elemento.getAxialStiffness()) 		+ "|" + "\n"
             );
         }
     }

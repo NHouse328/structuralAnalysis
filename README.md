@@ -3,7 +3,8 @@
 
 usei os dados do grupo 1: massa suspensa
 
-[A1 Resolvida](src/main/resources/A1_Solved.md)
+[A1_a Resolvida](src/main/resources/A1_a_Solved.md)
+[A1_b Resolvida](src/main/resources/A1_b_Solved.md)
 
 [Ex1 Resolvida](src/main/resources/EX1_Solved.md)
 

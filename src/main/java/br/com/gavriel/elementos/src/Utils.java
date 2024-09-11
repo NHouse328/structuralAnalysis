@@ -1,8 +1,11 @@
 package br.com.gavriel.elementos.src;
 
+import lombok.extern.log4j.Log4j2;
+
 import java.awt.Color;
 import java.util.Random;
 
+@Log4j2
 public class Utils {
 
     public double radiansToDegrees (double radian) {
@@ -13,7 +16,7 @@ public class Utils {
         return Math.toRadians(degree);
     }
 
-    public double inchToMillimeters (int Inches) {
+    public static double inchToMillimeters(double Inches) {
         return 25.4 * Inches;
     }
 
@@ -21,6 +24,25 @@ public class Utils {
         double conversionFactor = 101.971621;
 
         return gpa * conversionFactor;
+    }
+
+//    Perfil "T" aluminio com abas iguais 1.1/2 x 1/8 (3,81cm x 3,17mm)
+
+    public static void main(String[] args) {
+        double B = inchToMillimeters(1.5);
+        log.info(B);
+        double h = inchToMillimeters((double) 1 /8);
+        log.info(h);
+        double b = inchToMillimeters((double) 1 /8);
+        log.info(b);
+        double H = inchToMillimeters(1.5);
+        log.info(H);
+
+        log.info(tCrossSectionMm(B, h, b, H));
+    }
+
+    public static double tCrossSectionMm(double B, double h, double b, double H) {
+        return (B * h) + (b * (H - h));
     }
 
     public double[][] multiplyMatrixByScalar(double[][] matrix, double scalar) {
@@ -114,7 +136,7 @@ public class Utils {
         return result;
     }
 
-    public double convertMillimeterToMeter(double millimeter) {
+    public static double convertMillimeterToMeter(double millimeter) {
         return millimeter / 1000;
     }
 

@@ -20,7 +20,6 @@ public class Elemento {
     private double angleCosSquered;
 
     private double modulusOfElasticity;
-    private double radius;
     private double crossSection;
     private double axialStiffness;
     private double[][] elementStiffnessMatrix;
@@ -45,17 +44,18 @@ public class Elemento {
         this.angleName = angleName;
     }
 
-    public Elemento(String name, double modulusOfElasticity, double radius, Point2D start, Point2D end) {
+    public Elemento(String name, double modulusOfElasticity, double crossSection, Point2D start, Point2D end) {
         this.name = name;
 
         this.start = start;
         this.end = end;
 
+        this.crossSection = crossSection;
+
         this.deltaX = this.end.getX() - this.start.getX();
         this.deltaY = this.end.getY() - this.start.getY();
 
         this.length = Math.sqrt(Math.pow(this.deltaX, 2) + Math.pow(this.deltaY, 2));
-        this.radius = radius;
 
         this.angleRadian = Math.atan2(deltaY, deltaX);
         this.angleDegree = Math.toDegrees(this.angleRadian);
@@ -80,7 +80,6 @@ public class Elemento {
         this.angleCosSquered = Math.pow(this.angleCos, 2);
         this.angleSinSquered = Math.pow(this.angleSin, 2);
         this.sinTimesCos = this.angleSin * this.angleCos;
-        this.crossSection = Math.PI * Math.pow(this.radius, 2);
         this.axialStiffness = (this.crossSection * this.modulusOfElasticity) / this.length;
         this.elementStiffnessMatrix = calculeMatrixElement();
     }

@@ -5,7 +5,6 @@ import br.com.gavriel.elementos.model.Point2D;
 import lombok.Data;
 import lombok.extern.log4j.Log4j2;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -35,8 +34,6 @@ public class StructuralAnalysis {
 
 	static Utils utils = new Utils();
 	static final double epsilon = 1e-10;
-
-	static final DecimalFormat df = new DecimalFormat("0.##########");
 
 	public StructuralAnalysis(List<Point2D> points, List<Elemento> elements) {
 		this.points = points;

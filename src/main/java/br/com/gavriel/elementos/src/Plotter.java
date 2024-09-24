@@ -24,6 +24,7 @@ import java.util.List;
 
 @Log4j2
 public class Plotter extends JPanel implements MouseWheelListener {
+    private final double[] matrixU;
     private List<Point2D> points;
     private List<Elemento> elements;
     private final double[] matrixSupportsReactions;
@@ -45,6 +46,7 @@ public class Plotter extends JPanel implements MouseWheelListener {
         this.elements = elements;
         this.matrixSupportsReactions = analysis.getMatrixSupportsReactions();
         this.showData = showData;
+        this.matrixU = analysis.getMatrixU();
 
         addMouseWheelListener(this); // Listener para zoom
         MouseAdapter mouseHandler = new MouseAdapter() {
@@ -174,11 +176,18 @@ public class Plotter extends JPanel implements MouseWheelListener {
 
             double x = offsetX + point.getX() * scale;
             double y = offsetY - point.getY() * scale;
+            log.info(x);
+
+            double xu = offsetX + (point.getX() + matrixU[j] )* scale;
+            double yu = offsetY - (point.getY() + matrixU[j +1]) * scale;
 
             double forceY;
             double forceX;
 
             g2d.fillOval((int) x - diameter/2, (int) y - diameter/2, diameter, diameter);
+
+            g2d.setColor(Color.YELLOW);
+            g2d.fillOval((int) xu - diameter/2, (int) yu - diameter/2, diameter, diameter);
 
             if (this.showData) {
                 g2d.drawString(point.getName() + " (" + point.getX() + ", " + point.getY() + ")", (int) (x + 10  * scale), (int) (y + fontSize+ 100 * scale));

@@ -49,6 +49,7 @@ public class FileLogger {
             writeSecondInverceMatrix();
             writeMatrixSupportsReactions();
             writeElementsInternalForces();
+            writeDeslocamentos();
 
 
             this.bw.close();
@@ -57,7 +58,23 @@ public class FileLogger {
             log.error(e);
         }
     }
+
+    private void writeDeslocamentos() throws IOException {
+        this.bw.write("## Definir a matriz de deslocamentos." + "\n");
+
+        this.bw.write("|Deslocamento");
+        this.bw.write("| |" + "\n");
+        this.bw.write("|---|---|" + "\n");
+
+        for (int i = 0; i < analysis.getMatrixU().length; i++) {
+            this.bw.write("|U" + i);
+            this.bw.write("|" + df.format(analysis.getMatrixU()[i]));
+            this.bw.write("|" + "\n");
+        }
+    }
+
     private void writeFirstInverceMatrix() throws IOException {
+
         this.bw.write("## Definir a matriz inversa para encontrar os deslocamentos." + "\n");
 
         this.bw.write("|Deslocamento");

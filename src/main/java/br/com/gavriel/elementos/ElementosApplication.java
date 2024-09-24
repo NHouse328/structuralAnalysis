@@ -11,7 +11,7 @@ import lombok.extern.log4j.Log4j2;
 import java.util.Arrays;
 import java.util.List;
 
-import static br.com.gavriel.elementos.model.ModulusOfElasticity.AISI_ACO_1045;
+import static br.com.gavriel.elementos.model.ModulusOfElasticity.ASTM_A_36;
 
 @Log4j2
 public class ElementosApplication {
@@ -25,7 +25,7 @@ public class ElementosApplication {
 
 //		double crossSection = Math.PI * Math.pow(Utils.convertMillimeterToMeter(Utils.inchToMillimeters(1)), 2);
 		double crossSection = Utils.tCrossSectionMm(B, h, b, H);
-		double modulusOfElasticity = AISI_ACO_1045.getKgfPreMm2();
+		double modulusOfElasticity = ASTM_A_36.getKgfPreMm2();
 
 //		List<Point2D> points = Arrays.asList(
 //				new Point2D(null, 0.0	 ,0.0	, null	, null),
@@ -52,8 +52,8 @@ public class ElementosApplication {
 			new Point2D("6"	,20000.0	,6000.0	, +0.0, +0.0),
 			new Point2D("7"	,15000.0	,6000.0	, +0.0, +0.0),
 			new Point2D("8"	,10000.0	,4500.0	, +0.0, +0.0),
-			new Point2D("9"	,5000.0	,3000.0	, +0.0, -8826.0),
-			new Point2D("10"	,0.0		,3000.0	, null, -8826.0)
+			new Point2D("9"	,5000.0	,3000.0	, +0.0, -8820.0),
+			new Point2D("10"	,0.0		,3000.0	, null, -8820.0)
 		);
 
 		List<Elemento> elements = Arrays.asList(

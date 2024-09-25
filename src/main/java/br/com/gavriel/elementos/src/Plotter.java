@@ -24,7 +24,7 @@ import java.util.List;
 
 @Log4j2
 public class Plotter extends JPanel implements MouseWheelListener {
-    private final double[] matrixU;
+    private final List<Double> matrixU;
     private List<Point2D> points;
     private List<Elemento> elements;
     private final double[] matrixSupportsReactions;
@@ -170,27 +170,20 @@ public class Plotter extends JPanel implements MouseWheelListener {
         int diameter = (int) (30 * scale);
         int fontSize = g2d.getFontMetrics().getHeight();
 
-        for (int i = 0; i < points.size(); i ++) {
+        for (Point2D point : points) {
             g2d.setColor(Color.RED);
-            Point2D point = points.get(i);
+//            Point2D point = point2D;
 
             double x = offsetX + point.getX() * scale;
             double y = offsetY - point.getY() * scale;
-            log.info(x);
-
-            double xu = offsetX + (point.getX() + matrixU[j] )* scale;
-            double yu = offsetY - (point.getY() + matrixU[j +1]) * scale;
 
             double forceY;
             double forceX;
 
-            g2d.fillOval((int) x - diameter/2, (int) y - diameter/2, diameter, diameter);
-
-            g2d.setColor(Color.YELLOW);
-            g2d.fillOval((int) xu - diameter/2, (int) yu - diameter/2, diameter, diameter);
+            g2d.fillOval((int) x - diameter / 2, (int) y - diameter / 2, diameter, diameter);
 
             if (this.showData) {
-                g2d.drawString(point.getName() + " (" + point.getX() + ", " + point.getY() + ")", (int) (x + 10  * scale), (int) (y + fontSize+ 100 * scale));
+                g2d.drawString(point.getName() + " (" + point.getX() + ", " + point.getY() + ")", (int) (x + 10 * scale), (int) (y + fontSize + 100 * scale));
 
                 if (point.getForceX() != null) {
                     g2d.setColor(Color.BLUE);
@@ -204,7 +197,7 @@ public class Plotter extends JPanel implements MouseWheelListener {
                     drawArrow(g2d, (int) x, (int) y, (int) (x + forceX * 0.1 * scale), (int) y);
                 }
 
-                g2d.drawString("Fx ≅ " + df.format(forceX), (int) (x + 300 * scale), (int) (y + fontSize/2 + 50 * scale));
+                g2d.drawString("Fx ≅ " + df.format(forceX), (int) (x + 300 * scale), (int) (y + fontSize / 2 + 50 * scale));
 
                 if (point.getForceY() != null) {
                     g2d.setColor(Color.BLUE);
@@ -222,9 +215,9 @@ public class Plotter extends JPanel implements MouseWheelListener {
 
 
             } else {
-                g2d.drawString(point.getName(), (int) (x + 10  * scale), (int) (y + fontSize + 100 * scale));
+                g2d.drawString(point.getName(), (int) (x + 10 * scale), (int) (y + fontSize + 100 * scale));
             }
-            j+=2;
+            j += 2;
         }
     }
 

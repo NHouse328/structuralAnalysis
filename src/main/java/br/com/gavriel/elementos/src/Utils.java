@@ -3,6 +3,7 @@ package br.com.gavriel.elementos.src;
 import lombok.extern.log4j.Log4j2;
 
 import java.awt.Color;
+import java.util.ArrayList;
 import java.util.Random;
 
 @Log4j2
@@ -121,8 +122,8 @@ public class Utils {
         return inverse;
     }
 
-    public double multiplyArrays(double[] arrayA, double[] arrayB) {
-        if (arrayA.length != arrayB.length) {
+    public double multiplyArrays(double[] arrayA, ArrayList<Double> arrayB) {
+        if (arrayA.length != arrayB.size()) {
             throw new IllegalArgumentException("As arrays devem ter o mesmo tamanho.");
         }
 
@@ -130,7 +131,7 @@ public class Utils {
 
         // Multiplicar elemento por elemento e somar
         for (int i = 0; i < arrayA.length; i++) {
-            result += arrayA[i] * arrayB[i];
+            result += arrayA[i] * arrayB.get(i);
         }
 
         return result;

@@ -1,11 +1,13 @@
 package br.com.gavriel.elementos.model;
 
 import br.com.gavriel.elementos.src.Utils;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 
-@Getter
+
+@Data
 @NoArgsConstructor
 public class Elemento {
 
@@ -34,6 +36,10 @@ public class Elemento {
     private double angleRadian;
     private double angleDegree;
 
+    private double elementsInternalForces;
+    private ArrayList<Double> matrixDeltaU;
+    private ArrayList<Integer> elementKnots;
+
     private final double epsilon = 1e-15;
     private static final Utils utils = new Utils();
 
@@ -61,7 +67,6 @@ public class Elemento {
         this.angleDegree = Math.toDegrees(this.angleRadian);
 
         if (this.angleDegree < 0) {
-//TODO Validar se regra pode ser usada pois inverteu a direção de uma dar forças internas
             this.angleDegree += 360;
         }
 
@@ -82,6 +87,9 @@ public class Elemento {
         this.sinTimesCos = this.angleSin * this.angleCos;
         this.axialStiffness = (this.crossSection * this.modulusOfElasticity) / this.length;
         this.elementStiffnessMatrix = calculeMatrixElement();
+
+        this.elementKnots = new ArrayList<>();
+        this.matrixDeltaU = new ArrayList<>();
     }
 
     private double[][] calculeMatrixElement() {

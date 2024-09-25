@@ -10,11 +10,12 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.List;
+import java.util.Objects;
 
 @Log4j2
 public class FileLogger {
 
-    static final DecimalFormat df = new DecimalFormat("0.##########");
+    static final DecimalFormat df = new DecimalFormat("0.0#####");
 
     private static final String fileRoot = "src/main/resources/";
     private String filePath;
@@ -49,7 +50,6 @@ public class FileLogger {
             writeSecondInverceMatrix();
             writeMatrixSupportsReactions();
             writeElementsInternalForces();
-            writeDeslocamentos();
 
 
             this.bw.close();
@@ -66,9 +66,9 @@ public class FileLogger {
         this.bw.write("| |" + "\n");
         this.bw.write("|---|---|" + "\n");
 
-        for (int i = 0; i < analysis.getMatrixU().length; i++) {
+        for (int i = 0; i < analysis.getMatrixU().size(); i++) {
             this.bw.write("|U" + i);
-            this.bw.write("|" + df.format(analysis.getMatrixU()[i]));
+            this.bw.write("|" + df.format(analysis.getMatrixU().get(i)));
             this.bw.write("|" + "\n");
         }
     }
@@ -89,13 +89,13 @@ public class FileLogger {
         this.bw.write("|" + "\n");
 
         for (int i = 0; i < analysis.getMatrixElementsToInvert().length; i++) {
-            int u = analysis.getKnotsForces().indexOf(analysis.getForcesNotNull()[i]) + 1;
+            int u = analysis.getForces().indexOf(analysis.getForcesNotNull().get(i)) + 1;
             this.bw.write("|U" + u);
 
             for (int j = 0; j < analysis.getMatrixElementsToInvert().length; j++) {
-                this.bw.write("|" + analysis.getMatrixElementsToInvert()[i][j]);
+                this.bw.write("|" + df.format(analysis.getMatrixElementsToInvert()[i][j]));
             }
-            this.bw.write("|" + analysis.getForcesNotNull()[i]);
+            this.bw.write("|" + analysis.getForcesNotNull().get(i));
             this.bw.write("|" + "\n");
         }
     }
@@ -115,15 +115,15 @@ public class FileLogger {
         this.bw.write("|" + "\n");
 
         for (int i = 0; i < analysis.getMatrixElementsInverse().length; i++) {
-            int u = analysis.getKnotsForces().indexOf(analysis.getForcesNotNull()[i]) + 1;
+            int u = analysis.getForces().indexOf(analysis.getForcesNotNull().get(i)) + 1;
             this.bw.write("|U" + u);
 
             for (int j = 0; j < analysis.getMatrixElementsInverse().length; j++) {
-                this.bw.write("|" + analysis.getMatrixElementsInverse()[i][j]);
+                this.bw.write("|" + df.format(analysis.getMatrixElementsInverse()[i][j]));
             }
 
-            this.bw.write("|" + analysis.getForcesNotNull()[i]);
-            this.bw.write("|" + analysis.getMatrixUNotNull()[i]);
+            this.bw.write("|" + analysis.getForcesNotNull().get(i));
+            this.bw.write("|" + analysis.getMatrixU().stream().filter(Objects::nonNull).toArray()[i]);
             this.bw.write("|" + "\n");
         }
     }
@@ -132,18 +132,18 @@ public class FileLogger {
         this.bw.write("![elements Internal Forces](img/elementInternalForces.png)" + "\n");
 
         this.bw.write("## Forças internas e Característica." + "\n");
-        this.bw.write("|Elemento|EA/L|λ|μ|Força|Característica|" + "\n");
-        this.bw.write("|---|---|---|---|---|---|" + "\n");
-        for (int i = 0; i < this.elements.size(); i++) {
-            Elemento elemento = this.elements.get(i);
-
-            this.bw.write("|" );
-            this.bw.write( elemento.getName() + "|");
-            this.bw.write( df.format(elemento.getAxialStiffness()) + "|");
-            this.bw.write( df.format(elemento.getAngleCos()) + "|");
-            this.bw.write( df.format(elemento.getAngleSin()) + "|");
-            this.bw.write( df.format(analysis.getElementsInternalForces()[i]) + "|");
-            if (analysis.getElementsInternalForces()[i] > 0 ){
+        this.bw.write("|Elemento|EA/L|λ|μ|DeltaUX|DeltaUY|Força|Característica|" + "\n");
+        this.bw.write("|---|---|---|---|---|---|---|---|" + "\n");
+        for (Elemento elemento : this.elements) {
+            this.bw.write("|");
+            this.bw.write(elemento.getName() + "|");
+            this.bw.write(df.format(elemento.getAxialStiffness()) + "|");
+            this.bw.write(df.format(elemento.getAngleCos()) + "|");
+            this.bw.write(df.format(elemento.getAngleSin()) + "|");
+            this.bw.write(df.format(elemento.getMatrixDeltaU().get(0)) + "|");
+            this.bw.write(df.format(elemento.getMatrixDeltaU().get(1)) + "|");
+            this.bw.write(df.format(elemento.getElementsInternalForces()) + "|");
+            if (elemento.getElementsInternalForces() > 0) {
                 this.bw.write("TRAÇÃO" + "|");
             } else {
                 this.bw.write("COMPRESSÃO" + "|");
@@ -156,7 +156,7 @@ public class FileLogger {
     private void writeMatrixSupportsReactions() throws IOException {
         this.bw.write("## Encontrar as reações nos apoios." + "\n");
 
-        this.bw.write("|Deslocamento|Valor (kN)| Resultado");
+        this.bw.write("| |Deslocamento|Resultado");
         this.bw.write("|" + "\n");
 
         for (int i = 0; i < 3; i++) {
@@ -167,10 +167,10 @@ public class FileLogger {
         for (int i = 0; i < this.analysis.getMatrixSupportsReactions().length; i++) {
             this.bw.write("|F" + (i+1));
 
-            if (analysis.getKnotsForces().get(i) == null) {
+            if (analysis.getForces().get(i) == null) {
                 this.bw.write("|0");
             } else {
-                this.bw.write("|" + analysis.getMatrixU()[i]);
+                this.bw.write("|" + analysis.getMatrixU().get(i));
             }
 
             this.bw.write("|" + df.format(this.analysis.getMatrixSupportsReactions()[i]));
@@ -198,10 +198,10 @@ public class FileLogger {
 
         for (int i = 0; i < this.analysis.getGlobalStiffnessMatrix().length; i++) {
             this.bw.write("|F" + (i+1));
-            if (analysis.getKnotsForces().get(i) == null) {
+            if (analysis.getForces().get(i) == null) {
                 this.bw.write("|F" + (i+1));
             } else {
-                this.bw.write("|" + analysis.getKnotsForces().get(i));
+                this.bw.write("|" + analysis.getForces().get(i));
             }
 
             for (int j = 0; j < this.analysis.getGlobalStiffnessMatrix()[i].length; j++) {
@@ -244,10 +244,10 @@ public class FileLogger {
             this.bw.write("### Elemento " + element.getName() + "\n");
 
             this.bw.write(						  "|" +
-                    this.analysis.getElementsKnots().get(i).get(0)	+ "|" +
-                    this.analysis.getElementsKnots().get(i).get(1)	+ "|" +
-                    this.analysis.getElementsKnots().get(i).get(2) + "|" +
-                    this.analysis.getElementsKnots().get(i).get(3)	+ "| |\n"
+                    this.elements.get(i).getElementKnots().get(0)	+ "|" +
+                    this.elements.get(i).getElementKnots().get(1)	+ "|" +
+                    this.elements.get(i).getElementKnots().get(2) + "|" +
+                    this.elements.get(i).getElementKnots().get(3)	+ "| |\n"
             );
             this.bw.write("|---|---|---|---|---|\n");
 
@@ -260,7 +260,7 @@ public class FileLogger {
                     text.append("|");
                 }
 
-                text.append(this.analysis.getElementsKnots().get(i).get(j));
+                text.append(this.elements.get(i).getElementKnots().get(j));
                 text.append("|\n");
 
                 this.bw.write(String.valueOf(text));

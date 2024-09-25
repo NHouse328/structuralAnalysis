@@ -11,8 +11,6 @@ import lombok.extern.log4j.Log4j2;
 import java.util.Arrays;
 import java.util.List;
 
-import static br.com.gavriel.elementos.model.ModulusOfElasticity.ASTM_A_36;
-
 @Log4j2
 public class ElementosApplication {
 
@@ -23,25 +21,8 @@ public class ElementosApplication {
 		double b = Utils.inchToMillimeters((double) 1 /8);
 		double H = Utils.inchToMillimeters(1.5);
 
-//		double crossSection = Math.PI * Math.pow(Utils.convertMillimeterToMeter(Utils.inchToMillimeters(1)), 2);
 		double crossSection = Utils.tCrossSectionMm(B, h, b, H);
-		double modulusOfElasticity = ASTM_A_36.getKgfPreMm2();
-
-//		List<Point2D> points = Arrays.asList(
-//				new Point2D(null, 0.0	 ,0.0	, null	, null),
-//				new Point2D(null, 5000.0,0.0	, +0.0	, null),
-//				new Point2D(null, 3500.0,2000.0	, +1500.0, +1200.0),
-//				new Point2D(null, 1500.0,2000.0	, +0.0	, -8000.0)
-//		);
-//
-//		List<Elemento> elements = Arrays.asList(
-//				new Elemento(null, modulusOfElasticity, radius, points.get(0), points.get(1)),
-//				new Elemento(null, modulusOfElasticity, radius, points.get(1), points.get(2)),
-//				new Elemento(null, modulusOfElasticity, radius, points.get(2), points.get(3)),
-//				new Elemento(null, modulusOfElasticity, radius, points.get(3), points.get(0)),
-//				new Elemento(null, modulusOfElasticity, radius, points.get(2), points.get(0)),
-//				new Elemento(null, modulusOfElasticity, radius, points.get(3), points.get(1))
-//		);
+		double modulusOfElasticity = 200000.0;
 
 		List<Point2D> points = Arrays.asList(
 			new Point2D("1"	,0.0	 	,0.0		, null, null),
@@ -78,7 +59,7 @@ public class ElementosApplication {
 
 		StructuralAnalysis analysis = new StructuralAnalysis(points, elements);
 
-		new FileLogger("A1_b_Solved", points, elements, analysis);
+		new FileLogger("A1_c_Solved", points, elements, analysis);
 		Plotter.createAndShowPlot(points, elements, analysis, true);
 	}
 }
